@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+####just displays the translation in notify-osd
+#notify-send --icon=info "$(xsel -o)" "$(wget -U "Mozilla/5.0" -qO - "http://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=fa&dt=t&q=$(xsel -o | sed "s/[\"'<>]//g")" | sed "s/,,,0]],,.*//g" | awk -F'"' '{print $2, $6}')"
+
+####displays the translation in Zenity
+#text="$(xsel -o)"
+#translate="$(wget -U "Mozilla/5.0" -qO - "http://translate.googleapis.com/translate_a/single?#client=gtx&sl=auto&tl=fa&dt=t&q=$(echo $text | sed "s/[\"'<>]//g")" | sed "s/,,,0]],,.*//g" | awk -F'"' '{print $2, $6}')"
+#echo -e "Original text:" "$text"'\n' > /tmp/notitrans
+#echo "Translation:" "$translate" >> /tmp/notitrans
+#zenity --text-info --title="Translation" --filename=/tmp/notitrans
+
+####displays the translation in notify-osd and copy to clipboard
+text="$(xsel -o)"
+wget -q -U Mozilla "https://translate.google.com/translate_tts?ie=UTF-8&total=1&idx=0&client=tw-ob&tl=en&q=$(echo $text)&textlen=4" -O .RezaShokri.mp3
+translate="$(wget -U "Mozilla/5.0" -qO - "http://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=fa&dt=t&q=$(echo $text | sed "s/[\"'<>]//g")" | sed "s/,,,0]],,.*//g" | awk -F'"' '{print $2, $6}')"
+echo "$translate" | xclip -selection clipboard
+killall notify-osd
+notify-send --icon=info "$text" "$translate" | cvlc ~/.RezaShokri.mp3 | /usr/local/bin/./voice-google-translate-cvlc.sh
+
